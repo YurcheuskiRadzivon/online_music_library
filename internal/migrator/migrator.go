@@ -15,14 +15,14 @@ type Migrator struct {
 	srcDriver source.Driver
 }
 
-func NewMigrator(sqlFiles embed.FS, dirName string) *Migrator {
+func NewMigrator(sqlFiles embed.FS, dirName string) (*Migrator, error) {
 	driver, err := iofs.New(sqlFiles, dirName)
 	if err != nil {
-		panic(err) //// return error
+		return nil, err
 	}
 	return &Migrator{
 		srcDriver: driver,
-	}
+	}, nil
 
 }
 func (m *Migrator) ApplyMigrations(db *sql.DB) error {
@@ -40,7 +40,26 @@ func (m *Migrator) ApplyMigrations(db *sql.DB) error {
 	}()
 
 	if err = migrator.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("unable to apply migrations %v", err)
+		return fmt.Errorf("unable to apply migration %v", err)
+	}
+	return nil
+}
+func (m *Migrator) RollbackMigrations(db *sql.DB) error {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("unable to create db instance: %v", err)
+	}
+
+	migrator, err := migrate.NewWithInstance("embed_sql_migration_files", m.srcDriver, "psql_db", driver)
+	if err != nil {
+		return fmt.Errorf("unable to create migration: %v", err)
+	}
+	defer func() {
+		migrator.Close()
+	}()
+
+	if err = migrator.Down(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("unable to rollback migration %v", err)
 	}
 	return nil
 }
