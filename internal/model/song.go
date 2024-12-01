@@ -1,6 +1,7 @@
 package model
 
 type Song struct {
+	SoundId     int    `json:"sound_id,omitempty"`
 	Group       string `json:"group"`
 	Song        string `json:"song"`
 	ReleaseDate string `json:"releaseDate"`
