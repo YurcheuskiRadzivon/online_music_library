@@ -8,7 +8,6 @@ import (
 	"github.com/YurcheuskiRadzivon/online_music_library/migration"
 	"github.com/YurcheuskiRadzivon/online_music_library/pkg/logger"
 	"github.com/joho/godotenv"
-	"log"
 	"path/filepath"
 )
 
@@ -29,7 +28,7 @@ func init() {
 func main() {
 	defer func() {
 		if rec := recover(); rec != nil {
-			log.Printf("Caught panic: %v", rec)
+			lgr.ErrorLogger.Printf("Caught panic: %v", rec)
 		}
 	}()
 

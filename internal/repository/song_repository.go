@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/YurcheuskiRadzivon/online_music_library/internal/model"
-	"github.com/YurcheuskiRadzivon/online_music_library/pkg/logger"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -20,7 +19,7 @@ type songRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewSongRepository(dsnStr string, logger logger.Logger) (SongRepository, error) {
+func NewSongRepository(dsnStr string) (SongRepository, error) {
 	dsn := fmt.Sprintf(dsnStr)
 	db, err := pgxpool.Connect(context.Background(), dsn)
 	if err != nil {
