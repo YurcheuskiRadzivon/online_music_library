@@ -1,23 +1,37 @@
 package main
 
 import (
+	"database/sql"
+	"embed"
+	"fmt"
 	"github.com/YurcheuskiRadzivon/online_music_library/internal/config"
+	"github.com/YurcheuskiRadzivon/online_music_library/internal/migrator"
 	"github.com/joho/godotenv"
-	"log"
-	"os"
 )
 
+const migrationsDir = "migrations"
+
+//go:embed migrations/*.sql
+var MigrationsFS embed.FS
+
 func init() {
-	infoLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	debugLogger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	_ = debugLogger
 
 	if err := godotenv.Load(); err != nil {
-		infoLogger.Println("Not found .env file")
+		////		log.Println("Not found .env file")
 	}
+
 }
 func main() {
+	mgrtr := migrator.NewMigrator(MigrationsFS, migrationsDir)
 	conf := config.NewConfig()
-	_ = conf
+	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DB.DB_USER, conf.DB.DB_PASSWORD, conf.DB.DB_HOST, conf.DB.DB_PORT, conf.DB.DB_NAME)
+	connection, err := sql.Open("postgres", connectionStr)
+	if err != nil {
+		////
+	}
+	defer connection.Close()
+	if err = mgrtr.ApplyMigrations(connection); err != nil {
+		////
+	}
 
 }
