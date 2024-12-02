@@ -1,0 +1,193 @@
+definitions:
+  model.Song:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      releaseDate:
+        type: string
+      song:
+        type: string
+      sound_id:
+        type: integer
+      text:
+        type: string
+    type: object
+  model.SongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /songs:
+    get:
+      description: Retrieve a list of songs with pagination and sorting
+      parameters:
+      - description: Field to sort by
+        enum:
+        - sound_id
+        - text_length
+        - song
+        - release_date
+        in: query
+        name: sort
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Song'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all songs
+      tags:
+      - songs
+    post:
+      description: Insert a new song from a SongRequest
+      parameters:
+      - description: Song request object
+        in: body
+        name: songRequest
+        required: true
+        schema:
+          $ref: '#/definitions/model.SongRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Insert a new song
+      tags:
+      - songs
+  /songs/{song_id}:
+    delete:
+      description: Delete a song by ID
+      parameters:
+      - description: ID of the song
+        in: path
+        name: song_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a song
+      tags:
+      - songs
+    put:
+      description: Update a song by ID
+      parameters:
+      - description: ID of the song
+        in: path
+        name: song_id
+        required: true
+        type: integer
+      - description: Updated song object
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/model.Song'
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update an existing song
+      tags:
+      - songs
+  /songs/{song_id}/text:
+    get:
+      description: Retrieve the text of a song with pagination
+      parameters:
+      - description: ID of the song
+        in: path
+        name: song_id
+        required: true
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get song text
+      tags:
+      - songs
+swagger: "2.0"

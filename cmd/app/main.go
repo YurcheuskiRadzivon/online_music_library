@@ -30,7 +30,7 @@ func main() {
 	}()
 	conf := config.NewConfig()
 	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DB.DB_USER, conf.DB.DB_PASSWORD, conf.DB.DB_HOST, strconv.Itoa(conf.DB.DB_PORT), conf.DB.DB_NAME)
-	songHandler, err := initialization.InitializeComponentsSong(connectionStr)
+	songHandler, err := initialization.InitializeComponentsSong(connectionStr, lgr)
 	if err != nil {
 		panic(fmt.Errorf("Initialization has failed: %s\n", err))
 	}

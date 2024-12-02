@@ -7,6 +7,7 @@ import (
 
 func NewFiberRouter(songHandler handler.SongHandler) *fiber.App {
 	app := fiber.New()
+
 	app.Get("/songs", songHandler.GetSongs)
 	app.Get("/songs/:song_id/text", songHandler.GetSongText)
 	app.Delete("/songs/:song_id", songHandler.DeleteSong)
