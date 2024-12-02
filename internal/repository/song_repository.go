@@ -10,8 +10,8 @@ import (
 type SongRepository interface {
 	GetSongs() ([]model.Song, error)
 	GetSong(songId int) (*model.Song, error)
-	InsertSong(User model.Song) error
-	UpdateSong(songId int, Song model.Song) error
+	InsertSong(song model.Song) error
+	UpdateSong(songId int, song model.Song) error
 	DeleteSong(songId int) error
 }
 
@@ -28,18 +28,60 @@ func NewSongRepository(dsnStr string) (SongRepository, error) {
 	return &songRepository{db: db}, nil
 }
 func (sr *songRepository) GetSongs() ([]model.Song, error) {
-	return nil, nil
+	var songs []model.Song
+
+	query := `SELECT id, "group", song, release_date, text, link FROM songs`
+	rows, err := sr.db.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var song model.Song
+		err := rows.Scan(&song.SoundId, &song.Group, &song.Song, &song.ReleaseDate, &song.Text, &song.Link)
+		if err != nil {
+			return nil, err
+		}
+		songs = append(songs, song)
+	}
+
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return songs, nil
 }
 func (sr *songRepository) GetSong(songId int) (*model.Song, error) {
-	return nil, nil
+	var song model.Song
+	query := `SELECT id, "group", song, release_date, text, link FROM songs WHERE id = $1;`
+	err := sr.db.QueryRow(context.Background(), query, songId).Scan(&song.SoundId, &song.Group, &song.Song, &song.ReleaseDate, &song.Text, &song.Link)
+	if err != nil {
+		return nil, err
+	}
+	return &song, nil
 }
-func (sr *songRepository) InsertSong(User model.Song) error {
+func (sr *songRepository) InsertSong(song model.Song) error {
+	query := `INSERT INTO songs("group", song, release_date, text, link) VALUES ($1, $2, $3, $4, $5);`
+	_, err := sr.db.Exec(context.Background(), query, song.Group, song.Song, song.ReleaseDate, song.Text, song.Link)
+	if err != nil {
+		return err
+	}
 	return nil
 }
-func (sr *songRepository) UpdateSong(songId int, Song model.Song) error {
-
+func (sr *songRepository) UpdateSong(songId int, song model.Song) error {
+	query := `UPDATE songs SET "group"=$1, song=$2, release_date=$3, text=$4, link=$5 WHERE id=$6;;`
+	_, err := sr.db.Exec(context.Background(), query, song.Group, song.Song, song.ReleaseDate, song.Text, song.Link, songId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func (sr *songRepository) DeleteSong(songId int) error {
+	query := `DELETE FROM songs WHERE id=$1;`
+	_, err := sr.db.Exec(context.Background(), query, songId)
+	if err != nil {
+		return err
+	}
 	return nil
 }

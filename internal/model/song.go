@@ -2,11 +2,11 @@ package model
 
 type Song struct {
 	SoundId     int    `json:"sound_id,omitempty"`
-	Group       string `json:"group"`
-	Song        string `json:"song"`
-	ReleaseDate string `json:"releaseDate"`
-	Text        string `json:"text"`
-	Link        string `json:"link"`
+	Group       string `json:"group,omitempty"`
+	Song        string `json:"song,omitempty"`
+	ReleaseDate string `json:"releaseDate,omitempty"`
+	Text        string `json:"text,omitempty"`
+	Link        string `json:"link,omitempty"`
 }
 
 type SongRequest struct {

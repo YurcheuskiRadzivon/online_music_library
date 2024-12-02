@@ -23,15 +23,20 @@ func init() {
 	}
 }
 func main() {
+	defer func() {
+		if rec := recover(); rec != nil {
+			lgr.ErrorLogger.Printf("Caught panic: %v", rec)
+		}
+	}()
 	conf := config.NewConfig()
 	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DB.DB_USER, conf.DB.DB_PASSWORD, conf.DB.DB_HOST, strconv.Itoa(conf.DB.DB_PORT), conf.DB.DB_NAME)
 	songHandler, err := initialization.InitializeComponentsSong(connectionStr)
 	if err != nil {
-		lgr.ErrorLogger.Printf("Initialization has failed: %s\n", err)
+		panic(fmt.Errorf("Initialization has failed: %s\n", err))
 	}
+	lgr.InfoLogger.Println("Initialization components for router has successfully")
 	app := router.NewFiberRouter(songHandler)
-	go func() {
-		app.Listen(fmt.Sprintf(":%s", strconv.Itoa(conf.API.API_PORT)))
-	}()
+	lgr.DebugLogger.Println("Launching the application.....")
+	app.Listen(fmt.Sprintf(":%s", strconv.Itoa(conf.API.API_PORT)))
 
 }

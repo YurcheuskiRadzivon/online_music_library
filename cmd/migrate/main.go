@@ -41,7 +41,7 @@ func main() {
 
 	conf := config.NewConfig()
 	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", conf.DB.DB_USER, conf.DB.DB_PASSWORD, conf.DB.DB_HOST, strconv.Itoa(conf.DB.DB_PORT), conf.DB.DB_NAME)
-	lgr.InfoLogger.Println(connectionStr)
+	//r.InfoLogger.Printf("Connection line: %s\n", connectionStr)
 	connection, err := sql.Open("postgres", connectionStr)
 	if err != nil {
 		panic(fmt.Errorf("Connection has failed: %s\n", err))
@@ -49,6 +49,7 @@ func main() {
 	lgr.InfoLogger.Println("Connection has successfully")
 	defer connection.Close()
 	err = mgrtr.ApplyMigrations(connection, lgr)
+	//  err = mgrtr.RollbackMigrations(connection, lgr)
 	if err != nil {
 		panic(fmt.Errorf("Applying migrations has failed: %s\n", err))
 	}
