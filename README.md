@@ -8,15 +8,15 @@ git clone https://github.com/yourusername/online-music-library.git
 cd online-music-library 
 
 ```
-###Config
+### Config
 
 Edit the .env file to set the required environment variables.
 
-##Build and Run the Containers
+## Build and Run the Containers
 
 ```
 docker-compose up --build
 ```
 
-##Swagger
+## Swagger
 /docs or localhost:port/swagger/index.html
