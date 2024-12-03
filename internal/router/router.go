@@ -1,16 +1,17 @@
 package router
 
 import (
+	"fmt"
 	"github.com/YurcheuskiRadzivon/online_music_library/internal/handler"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 )
 
-func NewFiberRouter(songHandler handler.SongHandler) *fiber.App {
+func NewFiberRouter(songHandler handler.SongHandler, port int) *fiber.App {
 	app := fiber.New()
 	app.Static("/docs", "./docs")
 	app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-		URL: "http://localhost:8080/docs/swagger.json",
+		URL: fmt.Sprintf("http://localhost:%v/docs/swagger.json", port),
 	}))
 	app.Get("/songs", songHandler.GetSongs)
 	app.Get("/songs/:song_id/text", songHandler.GetSongText)

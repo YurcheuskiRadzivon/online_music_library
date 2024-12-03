@@ -35,7 +35,7 @@ func main() {
 		panic(fmt.Errorf("Initialization has failed: %s\n", err))
 	}
 	lgr.InfoLogger.Println("Initialization components for router has successfully")
-	app := router.NewFiberRouter(songHandler)
+	app := router.NewFiberRouter(songHandler, conf.API.API_PORT)
 	lgr.DebugLogger.Println("Launching the application.....")
 	app.Listen(fmt.Sprintf(":%s", strconv.Itoa(conf.API.API_PORT)))
 
