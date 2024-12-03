@@ -15,7 +15,7 @@ var lgr *logger.Logger = logger.NewLogger()
 
 func init() {
 
-	envPath := filepath.Join("..", "..", ".env")
+	envPath := filepath.Join(".env")
 	if err := godotenv.Load(envPath); err != nil {
 		lgr.DebugLogger.Println("Not found .env file")
 	} else {

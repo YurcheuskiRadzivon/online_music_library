@@ -21,7 +21,7 @@ func NewMigrator(sqlFiles embed.FS, dirName string) (*Migrator, error) {
 		return nil, fmt.Errorf("error creating source driver: %v", err)
 	}
 	/*
-		// Добавьте логирование для отладки
+
 		files, err := sqlFiles.ReadDir(dirName)
 		if err != nil {
 			return nil, fmt.Errorf("error reading migration directory: %v", err)
