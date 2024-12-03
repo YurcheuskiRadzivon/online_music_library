@@ -9,9 +9,11 @@ cd online-music-library
 
 ```
 ###Config
+
 Edit the .env file to set the required environment variables.
 
 ##Build and Run the Containers
+
 ```
 docker-compose up --build
 ```
