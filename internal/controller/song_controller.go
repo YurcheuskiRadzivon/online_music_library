@@ -47,6 +47,7 @@ func (sc *songController) GetSongs(ctx context.Context, sortParam string, page i
 	if !allowedSorts[sortParam] {
 		sortParam = "sound_id"
 	}
+	sc.lgr.DebugLogger.Printf("Sorting songs by %s\n", sortParam)
 	switch sortParam {
 	case "sound_id":
 		sort.Slice(songs, func(i, j int) bool {
@@ -70,6 +71,7 @@ func (sc *songController) GetSongs(ctx context.Context, sortParam string, page i
 			return dateI.Before(dateJ)
 		})
 	}
+	sc.lgr.DebugLogger.Printf("Total songs after sorting: %d\n", len(songs))
 	totalSongs := len(songs)
 	start := (page - 1) * pageSize
 	if start < 0 {
