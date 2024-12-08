@@ -34,31 +34,42 @@ func NewSongController(repo repository.SongRepository, lgr *logger.Logger) SongC
 }
 
 func (sc *songController) GetSongs(ctx context.Context, sortParam string, page int, pageSize int) ([]model.Song, error) {
-	sc.lgr.DebugLogger.Printf("GetSongs called with sortParam: %s, page: %d, pageSize: %d\n", sortParam, page, pageSize)
-
 	songs, err := sc.repo.GetSongs()
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve songs: %v", err)
 	}
-
 	allowedSorts := map[string]bool{
 		"sound_id":     true,
 		"text_length":  true,
 		"song":         true,
 		"release_date": true,
 	}
-
 	if !allowedSorts[sortParam] {
 		sortParam = "sound_id"
-		sc.lgr.DebugLogger.Printf("Invalid sort parameter: %s, defaulting to sound_id\n", sortParam)
 	}
-
-	sc.lgr.DebugLogger.Printf("Sorting songs by %s\n", sortParam)
-
-	// Sorting logic remains the same
-
-	sc.lgr.DebugLogger.Printf("Total songs after sorting: %d\n", len(songs))
-
+	switch sortParam {
+	case "sound_id":
+		sort.Slice(songs, func(i, j int) bool {
+			return songs[i].SoundId < songs[j].SoundId
+		})
+	case "text_length":
+		sort.Slice(songs, func(i, j int) bool {
+			return len(songs[i].Text) < len(songs[j].Text)
+		})
+	case "song":
+		sort.Slice(songs, func(i, j int) bool {
+			return strings.ToLower(songs[i].Song) < strings.ToLower(songs[j].Song)
+		})
+	case "release_date":
+		sort.Slice(songs, func(i, j int) bool {
+			dateI, errI := time.Parse("02.01.2006", songs[i].ReleaseDate)
+			dateJ, errJ := time.Parse("02.01.2006", songs[j].ReleaseDate)
+			if errI != nil || errJ != nil {
+				return false
+			}
+			return dateI.Before(dateJ)
+		})
+	}
 	totalSongs := len(songs)
 	start := (page - 1) * pageSize
 	if start < 0 {
@@ -72,9 +83,6 @@ func (sc *songController) GetSongs(ctx context.Context, sortParam string, page i
 		end = totalSongs
 	}
 	paginatedSongs := songs[start:end]
-
-	sc.lgr.InfoLogger.Printf("Returning %d songs from page %d with page size %d\n", len(paginatedSongs), page, pageSize)
-
 	return paginatedSongs, nil
 }
 
