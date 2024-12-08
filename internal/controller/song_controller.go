@@ -47,7 +47,7 @@ func (sc *songController) GetSongs(ctx context.Context, sortParam string, page i
 	if !allowedSorts[sortParam] {
 		sortParam = "sound_id"
 	}
-	sc.lgr.DebugLogger.Printf("Sorting songs by %s\n", sortParam)
+	sc.lgr.DebugLogger.Printf("Sortiвng songs by %s\n", sortParam)
 	switch sortParam {
 	case "sound_id":
 		sort.Slice(songs, func(i, j int) bool {
